@@ -442,14 +442,39 @@ function sendContactForm(e) {
   btn.textContent = 'Sending...';
   btn.disabled = true;
   status.style.display = 'none';
-  fetch('send-mail.php', {
+  fetch('https://api.web3forms.com/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, email: email, phone: phone, subject: subject, visit: visit, message: message })
+    body: JSON.stringify({
+      access_key: '046824f6-5676-4432-be17-6d3a4a5b613b',
+      subject: 'servicio',
+      from_name: name,
+      replyto: email,
+      message: [
+        'WORK ORDER',
+        '==========================================',
+        '',
+        'CLIENT INFORMATION',
+        '------------------------------------------',
+        'Full Name:         ' + name,
+        'Email:             ' + email,
+        'Phone:             ' + phone,
+        'Subject:           ' + subject,
+        'Technical Visit:   ' + (visit ? 'Yes' : 'No'),
+        '',
+        'MESSAGE',
+        '------------------------------------------',
+        message,
+        '',
+        '==========================================',
+        'Submitted: ' + new Date().toLocaleString('en-US'),
+        'Source: ARKAX Engineering Website'
+      ].join('\n')
+    })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    if (data.ok) {
+    if (data.success) {
       status.textContent = 'Message sent successfully! We will contact you shortly.';
       status.className = 'cf-status ok';
       status.style.display = 'block';
