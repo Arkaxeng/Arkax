@@ -429,9 +429,6 @@ function navBlog(id,langOnly){
   var bg=document.getElementById('blog-grid');
   if(bg) bg.innerHTML=getVisibleBlogPosts().map(renderBlogCard).join('');
 }());
-var EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
-var EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
-var EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
 function sendContactForm(e) {
   e.preventDefault();
   var btn    = document.querySelector('.form-submit');
@@ -440,45 +437,32 @@ function sendContactForm(e) {
   var email   = document.getElementById('cf-email').value.trim();
   var phone   = document.getElementById('cf-phone').value.trim() || 'Not provided';
   var subject = document.getElementById('cf-subject').value;
-  var visit   = document.getElementById('cf-visit').checked ? 'Yes' : 'No';
+  var visit   = document.getElementById('cf-visit').checked;
   var message = document.getElementById('cf-message').value.trim();
   btn.textContent = 'Sending...';
   btn.disabled = true;
   status.style.display = 'none';
-  var body = [
-    'WORK ORDER - ' + subject,
-    '==========================================',
-    '',
-    'CLIENT INFORMATION',
-    '------------------------------------------',
-    'Full Name:         ' + name,
-    'Email:             ' + email,
-    'Phone:             ' + phone,
-    'Subject:           ' + subject,
-    'Technical Visit:   ' + visit,
-    '',
-    'MESSAGE',
-    '------------------------------------------',
-    message,
-    '',
-    '==========================================',
-    'Submitted: ' + new Date().toLocaleString('en-US'),
-    'Source: ARKAX Engineering Website'
-  ].join('\n');
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email:  'dariel.fuentes@arkaxeng.com',
-    subject:   'WORK ORDER - ' + subject,
-    message:   body,
-    from_name: name,
-    reply_to:  email
-  }, EMAILJS_PUBLIC_KEY).then(function() {
-    status.textContent = 'Message sent successfully! We will contact you shortly.';
-    status.className = 'cf-status ok';
-    status.style.display = 'block';
-    document.getElementById('contact-form').reset();
+  fetch('send-mail.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, email: email, phone: phone, subject: subject, visit: visit, message: message })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.ok) {
+      status.textContent = 'Message sent successfully! We will contact you shortly.';
+      status.className = 'cf-status ok';
+      status.style.display = 'block';
+      document.getElementById('contact-form').reset();
+    } else {
+      status.textContent = 'Error sending message. Please try again or call us directly.';
+      status.className = 'cf-status err';
+      status.style.display = 'block';
+    }
     btn.textContent = 'Send Message';
     btn.disabled = false;
-  }, function() {
+  })
+  .catch(function() {
     status.textContent = 'Error sending message. Please try again or call us directly.';
     status.className = 'cf-status err';
     status.style.display = 'block';
@@ -486,5 +470,4 @@ function sendContactForm(e) {
     btn.disabled = false;
   });
 }
-</script><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script><button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Volver arriba"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></body></html>
-
+</script><button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Volver arriba"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></body></html>
