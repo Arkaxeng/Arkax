@@ -369,6 +369,19 @@ function toggleMenu(){
   var open=m.classList.toggle("open");
   h.classList.toggle("open",open);
   document.body.style.overflow=open?"hidden":"";
+  var isMobile=window.innerWidth<=640;
+  if(isMobile){
+    var pop=document.getElementById("svc-pop");
+    if(pop){
+      if(open){
+        pop.classList.remove("visible");
+      }else{
+        if(servicePopupEligible(_svcPopPage)){
+          pop.classList.add("visible");
+        }
+      }
+    }
+  }
 }
 function renderCard(proj) {
   var es=window._lang==='es';
